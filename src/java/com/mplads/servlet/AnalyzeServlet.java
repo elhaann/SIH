@@ -1,9 +1,8 @@
 package com.mplads.servlet;
 
 import com.mplads.dao.ProjectDAO;
-import com.mplads.dao.RiskDAO;
+import com.mplads.dao.ZoneDAO;
 import com.mplads.model.Project;
-import com.mplads.service.MLService;
 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,24 +10,27 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Map;
 
+/**
+ * GET /api/analyze?id=PROJECT_ID[&level=High|Medium|Low]
+ * Does NOT run the ML model. It returns the stored result for the project
+ * from the mplads_ml_results table (risk_score, risk_level, anomaly_score, recommendation).
+ */
 @WebServlet("/api/analyze")
 public class AnalyzeServlet extends HttpServlet {
 
     private ProjectDAO projectDAO = new ProjectDAO();
-    private MLService mlService = new MLService();
-    private RiskDAO riskDAO = new RiskDAO(); // Added RiskDAO
+    private ZoneDAO zoneDAO = new ZoneDAO();
 
     @Override
-    protected void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response)
-            throws IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
         String id = request.getParameter("id");
+        String level = request.getParameter("level");   // optional: zone the user came from
 
         if (id == null || id.isEmpty()) {
             response.setStatus(400);
@@ -37,7 +39,6 @@ public class AnalyzeServlet extends HttpServlet {
         }
 
         Project project = projectDAO.getProjectById(id);
-
         if (project == null) {
             response.setStatus(404);
             response.getWriter().print("{\"error\":\"Project not found\"}");
@@ -45,42 +46,38 @@ public class AnalyzeServlet extends HttpServlet {
         }
 
         try {
-            // 1. Call the Python ML Engine
-            String jsonResult = mlService.analyzeProject(project);
+            Map<String, Object> r = zoneDAO.getMlResult(project, level);
+            if (r == null) {
+                response.setStatus(404);
+                response.getWriter().print("{\"error\":\"No risk result found for this project in mplads_ml_results\"}");
+                return;
+            }
 
-            // 2. Parse the JSON result from Python (Basic manual parsing)
-            // Assuming Python returns: {"risk_score": 85.5, "risk_level": "High", "anomaly_score": 0.9, "model_version": "v1.0"}
-            double riskScore = Double.parseDouble(extractJsonValue(jsonResult, "risk_score"));
-            String riskLevel = extractJsonString(jsonResult, "risk_level");
-            double anomalyScore = Double.parseDouble(extractJsonValue(jsonResult, "anomaly_score"));
-            String modelVersion = extractJsonString(jsonResult, "model_version");
+            String riskLevel = String.valueOf(r.get("risk_level"));
+            String recommendation = r.get("recommendation") == null ? "" : String.valueOf(r.get("recommendation")).trim();
+            if (recommendation.isEmpty()) {
+                if (riskLevel.equalsIgnoreCase("high")) recommendation = "Requires priority verification.";
+                else if (riskLevel.equalsIgnoreCase("medium")) recommendation = "Requires further review.";
+                else recommendation = "Project looks normal. No anomalies detected.";
+            }
 
-            // 3. Save into MySQL using your existing RiskDAO!
-            riskDAO.saveRisk(id, riskScore, riskLevel, anomalyScore, modelVersion);
-
-            // 4. Send the result back to the Dashboard UI
-            response.getWriter().print(jsonResult);
+            response.getWriter().print("{"
+                    + "\"risk_score\":" + r.get("risk_score") + ","
+                    + "\"risk_level\":\"" + escapeJson(riskLevel) + "\","
+                    + "\"anomaly_score\":" + r.get("anomaly_score") + ","
+                    + "\"recommendation\":\"" + escapeJson(recommendation) + "\""
+                    + "}");
 
         } catch (Exception e) {
-            response.setStatus(500);
-            response.getWriter().print("{\"error\":\"ML service error or DB save failed\"}");
             e.printStackTrace();
+            response.setStatus(500);
+            response.getWriter().print("{\"error\":\"Could not load the risk result from the database\"}");
         }
     }
 
-    // --- Helper methods to extract values from JSON string without extra libraries ---
-    
-    private String extractJsonValue(String json, String key) {
-        String search = "\"" + key + "\":";
-        int start = json.indexOf(search);
-        if (start == -1) return "0";
-        start += search.length();
-        int end = json.indexOf(",", start);
-        if (end == -1) end = json.indexOf("}", start);
-        return json.substring(start, end).trim().replaceAll("\"", "");
-    }
-    
-    private String extractJsonString(String json, String key) {
-        return extractJsonValue(json, key);
+    private String escapeJson(String data) {
+        if (data == null) return "";
+        return data.replace("\\", "\\\\").replace("\"", "\\\"")
+                   .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t");
     }
 }

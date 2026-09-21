@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const work = project.work_ || 'N/A';
                         // project_id is 0 when no matching record was found in the projects table
                         const workCell = project.project_id
-                            ? `<a href="project-details.html?id=${project.project_id}" style="color: var(--accent-color); text-decoration: none;">${work}</a>`
+                            ? `<a href="project-details.html?id=${project.project_id}&level=High" style="color: var(--accent-color); text-decoration: none;">${work}</a>`
                             : work;
                         tr.innerHTML = `
                             <td>${workCell}</td>

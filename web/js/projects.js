@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // "View" needs a project id (used only for the link, never displayed)
             const viewCell = project.id
-                ? `<a class="view-link" style="color: #3b82f6; text-decoration: none; font-weight: bold;" href="project-details.html?id=${project.id}">View →</a>`
+                ? `<a class="view-link" style="color: #3b82f6; text-decoration: none; font-weight: bold;" href="project-details.html?id=${project.id}${ZONE_LEVELS[zone] ? '&level=' + ZONE_LEVELS[zone] : ''}">View →</a>`
                 : '—';
 
             tr.innerHTML = `

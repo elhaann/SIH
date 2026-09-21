@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MPLADS — Administrator Login</title>
+
+    <!-- Existing landing/auth CSS -->
+    <link rel="stylesheet" href="css/landing.css">
+</head>
+
+<body class="auth admin-auth">
+
+    <!-- =====================================================
+         BRAND
+    ====================================================== -->
+
+    <a href="index.html" class="brand auth-brand">
+
+        <span class="crest">
+            M
+        </span>
+
+        <span>
+            MPLADS
+            <small>Monitoring & Risk Analytics</small>
+        </span>
+
+    </a>
+
+
+    <!-- =====================================================
+         MAIN AUTH LAYOUT
+    ====================================================== -->
+
+    <main class="auth-layout">
+
+
+        <!-- =================================================
+             LEFT SIDE
+        ================================================== -->
+
+        <section class="auth-aside">
+
+            <p class="eyebrow light">
+                Administrator Access
+            </p>
+
+
+            <h1>
+                Centralized
+                <br>
+                <em>Risk Monitoring.</em>
+            </h1>
+
+
+            <p>
+
+                Secure administrator access to the MPLADS
+                monitoring platform for managing project
+                risk analysis, review queues and
+                system-level insights.
+
+            </p>
+
+
+            <!-- Key Points -->
+
+            <div class="mini-points">
+
+                <span>
+                    ✓ Monitor project risk zones
+                </span>
+
+                <span>
+                    ✓ Review AI-generated risk signals
+                </span>
+
+                <span>
+                    ✓ Access project-wide analytics
+                </span>
+
+                <span>
+                    ✓ Support priority-based verification
+                </span>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             LOGIN CARD
+        ================================================== -->
+
+        <section class="auth-card">
+
+            <!-- Admin badge -->
+
+            <div class="admin-badge">
+                Administrator
+            </div>
+
+
+            <h2>
+                Administrator Login
+            </h2>
+
+
+            <p>
+                Sign in to access the administrative
+                monitoring dashboard.
+            </p>
+
+
+            <!-- =================================================
+                 LOGIN FORM
+            ================================================== -->
+
+            <form action="LoginServlet" method="POST">
+
+
+                <!-- EMAIL -->
+
+                <label for="email">
+
+                    Administrator Email
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter administrator email"
+                        autocomplete="username"
+                        required
+                    >
+
+                </label>
+
+
+
+                <!-- PASSWORD -->
+
+                <label for="password">
+
+                    Password
+
+                    <div class="input-wrap">
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="eye"
+                            id="togglePassword"
+                            aria-label="Show password"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                </label>
+
+
+
+                <!-- FORM OPTIONS -->
+
+                <div class="form-row">
+
+                    <label class="check">
+
+                        <input
+                            type="checkbox"
+                            name="remember"
+                            id="remember"
+                        >
+
+                        <span>
+                            Remember me
+                        </span>
+
+                    </label>
+
+
+                    <a href="#" onclick="return false;">
+                        Forgot password?
+                    </a>
+
+                </div>
+
+
+
+                <!-- LOGIN BUTTON -->
+
+                <button
+                    type="submit"
+                    class="btn btn-gold full"
+                >
+                    Administrator Login
+                    <span style="margin-left: 8px;">→</span>
+                </button>
+
+            </form>
+
+
+
+            <!-- =================================================
+                 BOTTOM LINKS
+            ================================================== -->
+
+            <div class="auth-bottom">
+
+                <p>
+                    Authorized personnel only.
+                </p>
+
+
+                <a href="login.html">
+                    ← Official Login
+                </a>
+
+                <span style="margin: 0 8px; color: #64748b;">
+                    |
+                </span>
+
+                <a href="index.html">
+                    Return to Home
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         PROTOTYPE NOTE
+    ====================================================== -->
+
+    <div class="prototype-note">
+
+        Prototype demonstration • Smart India Hackathon 2026
+
+    </div>
+
+
+
+    <!-- =====================================================
+         PASSWORD TOGGLE
+    ====================================================== -->
+
+    <script>
+
+        const passwordInput =
+            document.getElementById("password");
+
+        const togglePassword =
+            document.getElementById("togglePassword");
+
+
+        togglePassword.addEventListener("click", function () {
+
+            if (passwordInput.type === "password") {
+
+                passwordInput.type = "text";
+
+                togglePassword.textContent = "Hide";
+
+                togglePassword.setAttribute(
+                    "aria-label",
+                    "Hide password"
+                );
+
+            } else {
+
+                passwordInput.type = "password";
+
+                togglePassword.textContent = "Show";
+
+                togglePassword.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
+            }
+
+        });
+
+    </script>
+
+
+
+    <!-- =====================================================
+         LOGIN ERROR HANDLING
+    ====================================================== -->
+
+    <script>
+
+        const params =
+            new URLSearchParams(window.location.search);
+
+        const error =
+            params.get("error");
+
+
+        if (error === "invalid") {
+
+            alert(
+                "Invalid administrator email or password."
+            );
+
+        }
+
+        else if (error === "empty") {
+
+            alert(
+                "Please enter your email and password."
+            );
+
+        }
+
+        else if (error === "driver") {
+
+            alert(
+                "Database driver could not be loaded."
+            );
+
+        }
+
+        else if (error === "database") {
+
+            alert(
+                "Unable to connect to the database. Please try again."
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>

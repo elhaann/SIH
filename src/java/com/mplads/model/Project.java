@@ -13,6 +13,7 @@ public class Project {
     private String idaApproval;
     private String projectStatus;
     private String house;
+    private long mlResultId;   // mplads_ml_results.id (only set for zone rows)
 
     public int getProjectId() { return projectId; }
     public void setProjectId(int projectId) { this.projectId = projectId; }
@@ -46,4 +47,7 @@ public class Project {
 
     public String getHouse() { return house; }
     public void setHouse(String house) { this.house = house; }
+
+    public long getMlResultId() { return mlResultId; }
+    public void setMlResultId(long mlResultId) { this.mlResultId = mlResultId; }
 }

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MPLADS — Risk Map</title>
+
+<!-- Leaflet CSS for Interactive Map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<style>
+    /* =====================================================
+       ROOT (matches admin-dashboard.html design system)
+    ====================================================== */
+    :root {
+        --bg: #f3f6fa;
+        --white: #ffffff;
+        --sidebar: #081a31;
+        --sidebar-soft: #0e2848;
+        --sidebar-hover: #15385f;
+        --text: #172b46;
+        --muted: #6f7f95;
+        --gold: #d8ad2f;
+        --gold-soft: #f5e8b5;
+        --blue: #287bc7;
+        --blue-soft: #eaf4fd;
+        --red: #d94c4c;
+        --red-soft: #fff0f0;
+        --yellow: #cf9616;
+        --yellow-soft: #fff7dd;
+        --green: #22945a;
+        --green-soft: #e9f8f0;
+        --border: #dbe3ec;
+        --shadow: 0 8px 24px rgba(20, 37, 63, 0.07);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+    }
+    button, input { font: inherit; }
+    a { text-decoration: none; color: inherit; }
+
+    .app { display: flex; min-height: 100vh; }
+
+    /* ---------- Sidebar ---------- */
+    .sidebar {
+        width: 255px; background: var(--sidebar); color: #fff;
+        position: fixed; top: 0; left: 0; bottom: 0;
+        display: flex; flex-direction: column; z-index: 20;
+    }
+    .sidebar-brand {
+        padding: 28px 22px; border-bottom: 1px solid rgba(255,255,255,0.08);
+        display: flex; align-items: center; gap: 12px;
+    }
+    .logo-box {
+        width: 40px; height: 40px; background: var(--gold); color: #111;
+        border-radius: 8px; display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 20px;
+    }
+    .brand-name { font-size: 18px; font-weight: 750; line-height: 1.1; }
+    .brand-subtitle { color: #9eb0c8; font-size: 10px; margin-top: 3px; letter-spacing: 0.02em; }
+
+    .sidebar-nav { padding: 22px 14px; display: flex; flex-direction: column; gap: 6px; }
+    .nav-label {
+        color: #7f96b3; font-size: 10px; font-weight: 700; letter-spacing: 0.15em;
+        text-transform: uppercase; padding: 12px 14px 8px;
+    }
+    .nav-item {
+        display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+        border-radius: 7px; color: #b9c9dc; font-size: 14px; transition: 0.2s ease;
+    }
+    .nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+    .nav-item.active {
+        background: var(--sidebar-soft); color: #fff; box-shadow: inset 3px 0 0 var(--gold);
+    }
+    .nav-icon { width: 20px; text-align: center; opacity: 0.9; }
+
+    .sidebar-bottom { margin-top: auto; padding: 16px 14px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .admin-mini { display: flex; align-items: center; gap: 10px; padding: 10px; margin-bottom: 10px; }
+    .admin-avatar {
+        width: 36px; height: 36px; border-radius: 50%; background: #e7edf5; color: var(--sidebar);
+        display: flex; justify-content: center; align-items: center; font-weight: 700;
+    }
+    .admin-mini strong { font-size: 12px; display: block; color: #fff; }
+    .admin-mini span { display: block; color: #8fa5bf; font-size: 10px; margin-top: 2px; }
+
+    /* ---------- Main / Topbar ---------- */
+    .main { margin-left: 255px; width: calc(100% - 255px); min-height: 100vh; }
+    .topbar {
+        height: 76px; background: var(--white); border-bottom: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: space-between; padding: 0 32px;
+        position: sticky; top: 0; z-index: 10;
+    }
+    .search-box { width: 380px; position: relative; }
+    .search-box input {
+        width: 100%; height: 42px; border: 1px solid var(--border); border-radius: 7px;
+        padding: 0 14px 0 40px; background: #fbfcfe; outline: none; font-size: 13px;
+    }
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #8b9bad; font-size: 14px; }
+    .top-actions { display: flex; align-items: center; gap: 14px; }
+    .top-button {
+        height: 40px; padding: 0 14px; border: 1px solid var(--border); background: #fff;
+        border-radius: 7px; color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .top-button:hover { border-color: #b9c8d9; }
+    .profile { display: flex; align-items: center; gap: 10px; padding-left: 8px; }
+    .profile-avatar {
+        width: 36px; height: 36px; border-radius: 50%; background: #e8eff7; color: #28517a;
+        display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;
+    }
+    .profile-name { font-size: 12px; font-weight: 700; }
+    .profile-role { color: var(--muted); font-size: 10px; }
+
+    .content { padding: 30px 32px 45px; }
+    .page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; }
+    .eyebrow { color: #6d8198; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 7px; }
+    .page-title { font-size: 32px; line-height: 1.1; font-weight: 750; letter-spacing: -0.02em; color: #152b49; }
+    .page-description { margin-top: 7px; color: var(--muted); font-size: 13px; }
+    .date-info { text-align: right; color: var(--muted); font-size: 11px; }
+
+    /* ---------- Legend strip ---------- */
+    .legend-strip { display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+    .legend-chip {
+        display: flex; align-items: center; gap: 9px; background: var(--white); border: 1px solid var(--border);
+        border-radius: 999px; padding: 9px 16px; box-shadow: var(--shadow); font-size: 12.5px; font-weight: 600;
+    }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .legend-chip b { font-weight: 800; margin-left: 2px; }
+
+    /* ---------- Map + side layout ---------- */
+    .map-layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; align-items: start; }
+
+    .map-panel {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 16px; box-shadow: var(--shadow); padding: 26px; position: relative; overflow: hidden;
+    }
+    .map-panel-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; position: relative; z-index: 2; }
+    .map-panel-head h2 { color: #152b49; font-size: 17px; font-weight: 750; }
+    .map-panel-head p { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .map-glow-count { text-align: right; }
+    .map-glow-count b { display: block; color: #b9860f; font-size: 24px; font-weight: 800; line-height: 1; }
+    .map-glow-count span { color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* Updated Map Wrapper for Leaflet */
+    .india-map-wrap {
+        position: relative; width: 100%; height: 500px; 
+        border-radius: 12px; overflow: hidden; border: 1px solid var(--border);
+    }
+    #indiaMap { width: 100%; height: 100%; background: #eaf3fb; }
+
+    /* Custom Leaflet Pins */
+    .custom-pin-wrap { background: none; border: none; }
+    .map-pin {
+        width: 20px; height: 20px; border: none; background: none; padding: 0; cursor: pointer; outline: none;
+    }
+    .map-pin svg { width: 100%; height: 100%; overflow: visible; display: block; }
+    .map-pin .pin-pulse { transform-origin: 10px 10px; animation: pinPulse 2.2s ease-out infinite; }
+    
+    .map-pin.red .pin-pulse, .map-pin.red .pin-body { fill: var(--red); }
+    .map-pin.yellow .pin-pulse, .map-pin.yellow .pin-body { fill: var(--yellow); }
+    .map-pin.green .pin-pulse, .map-pin.green .pin-body { fill: var(--green); }
+    
+    .map-pin:hover .pin-body, .map-pin.pin-active .pin-body { transform: scale(1.28); }
+    .pin-body { transform-origin: 10px 8px; transition: transform 0.15s ease; }
+
+    @keyframes pinPulse {
+        0%   { opacity: 0.55; transform: scale(0.4); }
+        70%  { opacity: 0; transform: scale(2.6); }
+        100% { opacity: 0; transform: scale(2.6); }
+    }
+
+    /* Leaflet Custom Tooltip Integration */
+    .leaflet-tooltip.custom-leaflet-tooltip {
+        background: var(--white); border: none; border-radius: 10px;
+        box-shadow: 0 14px 34px rgba(8, 20, 40, 0.35); padding: 14px 16px;
+        font-family: Inter, system-ui, sans-serif; min-width: 240px; white-space: normal;
+        color: var(--text); opacity: 1 !important;
+    }
+    .leaflet-tooltip.custom-leaflet-tooltip::before { border-top-color: var(--white); }
+    
+    .tt-zone { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800;
+        letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; margin-bottom: 8px; }
+    .tt-zone.red { color: var(--red); background: var(--red-soft); }
+    .tt-zone.yellow { color: var(--yellow); background: var(--yellow-soft); }
+    .tt-zone.green { color: var(--green); background: var(--green-soft); }
+    .tt-work { font-size: 13px; font-weight: 750; color: #152b49; line-height: 1.35; margin-bottom: 8px; }
+    .tt-row { display: flex; justify-content: space-between; gap: 10px; font-size: 11.5px; padding: 3px 0; color: var(--muted); }
+    .tt-row b { color: var(--text); font-weight: 650; text-align: right; }
+
+    /* ---------- Side lists ---------- */
+    .zone-list-col { display: flex; flex-direction: column; gap: 16px; }
+    .zone-list-panel { background: var(--white); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: 16px 18px; }
+    .zone-list-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .zone-list-head .name { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 750; }
+    .zone-list-head .count { font-size: 12px; font-weight: 800; color: var(--muted); }
+    .zone-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+
+    .zone-list-item {
+        display: flex; align-items: flex-start; gap: 10px; padding: 9px 8px; border-radius: 8px;
+        cursor: pointer; transition: background 0.15s ease;
+    }
+    .zone-list-item:hover, .zone-list-item.pin-active { background: #f3f6fa; }
+    .zone-list-item .pip { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex: none; }
+    .zli-work { font-size: 12.5px; font-weight: 650; color: var(--text); line-height: 1.3; }
+    .zli-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .loading-note, .empty-note { color: var(--muted); font-size: 12px; padding: 10px 8px; }
+
+    @media (max-width: 1080px) {
+        .map-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 850px) {
+        .sidebar { width: 72px; }
+        .sidebar-brand { justify-content: center; padding: 20px 10px; }
+        .sidebar .brand-name, .sidebar .brand-subtitle, .sidebar .nav-label,
+        .sidebar .nav-item span:not(.nav-icon), .sidebar .admin-mini > div { display: none; }
+        .sidebar-nav { padding: 18px 10px; }
+        .nav-item { justify-content: center; }
+        .main { margin-left: 72px; width: calc(100% - 72px); }
+        .topbar { padding: 0 18px; }
+        .search-box { width: 45%; }
+        .content { padding: 22px 18px 35px; }
+    }
+    @media (max-width: 620px) {
+        .topbar { height: auto; min-height: 70px; gap: 10px; flex-wrap: wrap; padding: 12px 15px; }
+        .search-box { width: 100%; }
+        .top-actions { width: 100%; justify-content: flex-end; }
+        .page-header { align-items: flex-start; flex-direction: column; gap: 10px; }
+        .date-info { text-align: left; }
+        .page-title { font-size: 26px; }
+    }
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo-box">M</div>
+            <div>
+                <div class="brand-name">MPLADS</div>
+                <div class="brand-subtitle">Monitoring &amp; Risk Analytics</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Administration</div>
+            <a href="admin-dashboard.html" class="nav-item">
+                <span class="nav-icon">▦</span><span>Dashboard</span>
+            </a>
+
+            <div class="nav-label">Management</div>
+            <a class="nav-item" href="analytics.html">
+                <span class="nav-icon">◈</span><span>Analytics</span>
+            </a>
+            <a href="map.html" class="nav-item active">
+                <span class="nav-icon">▥</span><span>Map</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="admin-mini">
+                <div class="admin-avatar">SA</div>
+                <div>
+                    <strong>System Admin</strong>
+                    <span>Administrator</span>
+                </div>
+            </div>
+            <a href="../logout" class="nav-item">
+                <span class="nav-icon">↪</span><span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- ===================== MAIN ===================== -->
+    <main class="main">
+
+        <header class="topbar">
+            <div class="search-box">
+                <span class="search-icon">⌕</span>
+                <input type="text" id="mapSearch" placeholder="Search project, MP, state or location...">
+            </div>
+            <div class="top-actions">
+                <button class="top-button" id="refreshButton">⟳ Refresh Data</button>
+                <button class="top-button">◔ Notifications</button>
+                <div class="profile">
+                    <div class="profile-avatar">SA</div>
+                    <div>
+                        <div class="profile-name">System Admin</div>
+                        <div class="profile-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <div class="page-header">
+                <div>
+                    <div class="eyebrow">Geographic Risk Overview</div>
+                    <h1 class="page-title">India Risk Map</h1>
+                    <p class="page-description">
+                        Live placement of priority MPLADS projects across Indian states, coloured by AI-assessed risk zone.
+                    </p>
+                </div>
+                
+            </div>
+
+            <div class="legend-strip">
+                <div class="legend-chip"><span class="legend-dot" style="background:var(--red)"></span>Red Zone <b id="legend-red">8</b></div>
+                <div class="legend-chip"><span class="legend-dot" style="background:var(--yellow)"></span>Yellow Zone <b id="legend-yellow">5</b></div>
+                <div class="legend-chip"><span class="legend-dot" style="background:var(--green)"></span>Green Zone <b id="legend-green">10</b></div>
+                <div class="legend-chip">📍 Hover a pin for full project details</div>
+            </div>
+
+            <section class="map-layout">
+
+                <!-- ============ MAP ============ -->
+                <div class="map-panel">
+                    <div class="map-panel-head">
+                        <div>
+                            <h2>◈ Project Location Map</h2>
+                            <p>Geographically accurate positioning across Indian states and territories.</p>
+                        </div>
+                        <div class="map-glow-count">
+                            <b id="map-total">23</b>
+                            <span>Projects shown</span>
+                        </div>
+                    </div>
+
+                    <!-- Replace custom SVG with Leaflet container -->
+                    <div class="india-map-wrap">
+                        <div id="indiaMap"></div>
+                    </div>
+                </div>
+
+                <!-- ============ SIDE LISTS ============ -->
+                <div class="zone-list-col">
+
+                    <div class="zone-list-panel">
+                        <div class="zone-list-head">
+                            <div class="name"><span class="zone-dot" style="background:var(--red)"></span>Red Zone — High Risk</div>
+                            <div class="count" id="count-red">0 / 8</div>
+                        </div>
+                        <div id="list-red"><p class="loading-note">Loading projects…</p></div>
+                    </div>
+
+                    <div class="zone-list-panel">
+                        <div class="zone-list-head">
+                            <div class="name"><span class="zone-dot" style="background:var(--yellow)"></span>Yellow Zone — Medium Risk</div>
+                            <div class="count" id="count-yellow">0 / 5</div>
+                        </div>
+                        <div id="list-yellow"><p class="loading-note">Loading projects…</p></div>
+                    </div>
+
+                    <div class="zone-list-panel">
+                        <div class="zone-list-head">
+                            <div class="name"><span class="zone-dot" style="background:var(--green)"></span>Green Zone — Lower Risk</div>
+                            <div class="count" id="count-green">0 / 10</div>
+                        </div>
+                        <div id="list-green"><p class="loading-note">Loading projects…</p></div>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+</div>
+
+<!-- Leaflet JS logic for initialization and real coordinates -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function () {
+    "use strict";
+
+    // Initialize Leaflet Map centered on India
+    var map = L.map('indiaMap', {
+        center: [22.5937, 78.9629],
+        zoom: 4.5,
+        zoomControl: true,
+        scrollWheelZoom: false // Prevents accidental zooming when scrolling the page
+    });
+
+    // Clean administrative base map provided by CartoDB
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 10,
+        minZoom: 4
+    }).addTo(map);
+
+    // Layer Group to easily clear and re-add pins on refresh
+    var pinLayer = L.layerGroup().addTo(map);
+    var activeMarkers = {}; // Stores mapping of ID -> Leaflet Marker
+
+    var ZONE_TARGET = { High: 8, Medium: 5, Low: 10 };
+    var ZONE_CLASS  = { High: 'red', Medium: 'yellow', Low: 'green' };
+    var ZONE_LABEL  = { High: 'Red Zone', Medium: 'Yellow Zone', Low: 'Green Zone' };
+
+    // Real-world Lat/Lng mappings for Indian States and UTs
+    var STATE_COORDS = {
+        'jammu and kashmir': [33.7782, 76.5762], 'jammu & kashmir': [33.7782, 76.5762], 'ladakh': [34.1526, 77.5771],
+        'himachal pradesh': [31.1048, 77.1665], 'punjab': [31.1471, 75.3412], 'chandigarh': [30.7333, 76.7794],
+        'haryana': [29.0588, 76.0856], 'delhi': [28.7041, 77.1025], 'nct of delhi': [28.7041, 77.1025],
+        'uttarakhand': [30.0668, 79.0193], 'rajasthan': [27.0238, 74.2179], 'gujarat': [22.2587, 71.1924],
+        'uttar pradesh': [26.8467, 80.9462], 'bihar': [25.0961, 85.3131], 'sikkim': [27.5330, 88.5122],
+        'west bengal': [22.9868, 87.8550], 'jharkhand': [23.6102, 85.2799], 'odisha': [20.9517, 85.0985],
+        'orissa': [20.9517, 85.0985], 'assam': [26.2006, 92.9376], 'arunachal pradesh': [28.2180, 94.7278],
+        'nagaland': [26.1584, 94.5624], 'manipur': [24.6637, 93.9063], 'mizoram': [23.1645, 92.9376],
+        'meghalaya': [25.4670, 91.3662], 'tripura': [23.9408, 91.9882], 'chhattisgarh': [21.2787, 81.8661],
+        'madhya pradesh': [22.9734, 78.6569], 'maharashtra': [19.7515, 75.7139], 'goa': [15.2993, 74.1240],
+        'telangana': [18.1124, 79.0193], 'andhra pradesh': [15.9129, 79.7400], 'karnataka': [15.3173, 75.7139],
+        'tamil nadu': [11.1271, 78.6569], 'kerala': [10.8505, 76.2711], 'puducherry': [11.9416, 79.8083]
+    };
+
+    function coordFor(state) {
+        var key = (state || '').trim().toLowerCase();
+        // Add a slight random offset to prevent pins from perfectly overlapping if in the same state
+        var coord = STATE_COORDS[key];
+        if (coord) {
+            return [
+                coord[0] + (Math.random() - 0.5) * 1.5,
+                coord[1] + (Math.random() - 0.5) * 1.5
+            ];
+        }
+        return null;
+    }
+
+    var FALLBACK = {
+        High: [
+            { mp_name:'Ramesh Yadav', work_:'Upgradation of Community Health Centre', state:'Uttar Pradesh', constituency:'Gorakhpur', allocation_amount:8500000, project_status:'Delayed', project_id:101 },
+            { mp_name:'Priya Deshmukh', work_:'Rural Road Connectivity Project', state:'Maharashtra', constituency:'Nagpur', allocation_amount:12500000, project_status:'Unsanctioned', project_id:102 },
+            { mp_name:'Anand Krishnan', work_:'Drinking Water Supply Scheme', state:'Tamil Nadu', constituency:'Coimbatore', allocation_amount:6200000, project_status:'Delayed', project_id:103 },
+            { mp_name:'Suman Bharadwaj', work_:'School Building Renovation', state:'Rajasthan', constituency:'Jodhpur', allocation_amount:4300000, project_status:'Ongoing', project_id:104 },
+            { mp_name:'Karthik Reddy', work_:'Irrigation Canal Construction', state:'Andhra Pradesh', constituency:'Guntur', allocation_amount:15800000, project_status:'Unsanctioned', project_id:105 },
+            { mp_name:'Debjani Sen', work_:'Solar Street Lighting Project', state:'West Bengal', constituency:'Howrah', allocation_amount:5100000, project_status:'Delayed', project_id:106 },
+            { mp_name:'Harpreet Singh', work_:'Sports Stadium Development', state:'Punjab', constituency:'Amritsar', allocation_amount:22000000, project_status:'Unsanctioned', project_id:107 },
+            { mp_name:'Meena Joshi', work_:'Bridge Construction over River', state:'Gujarat', constituency:'Surat', allocation_amount:18700000, project_status:'Delayed', project_id:108 }
+        ],
+        Medium: [
+            { mp_name:'Arvind Chauhan', work_:'Panchayat Road Paving', state:'Madhya Pradesh', constituency:'Indore', allocation_amount:3200000, project_status:'Ongoing', project_id:201 },
+            { mp_name:'Latha Nair', work_:'Anganwadi Centre Construction', state:'Kerala', constituency:'Kollam', allocation_amount:2100000, project_status:'Ongoing', project_id:202 },
+            { mp_name:'Vikram Rathore', work_:'Public Library Renovation', state:'Chhattisgarh', constituency:'Raipur', allocation_amount:2800000, project_status:'Delayed', project_id:203 },
+            { mp_name:'Nusrat Ali', work_:'Handpump Installation Drive', state:'Bihar', constituency:'Patna Sahib', allocation_amount:1500000, project_status:'Ongoing', project_id:204 },
+            { mp_name:'Sneha Kulkarni', work_:'Community Hall Construction', state:'Karnataka', constituency:'Belagavi', allocation_amount:3600000, project_status:'Ongoing', project_id:205 }
+        ],
+        Low: [
+            { mp_name:'Rajiv Menon', work_:'Primary School Furniture Supply', state:'Kerala', constituency:'Ernakulam', allocation_amount:900000, project_status:'Completed', project_id:301 },
+            { mp_name:'Deepika Rao', work_:'Village Pond Renovation', state:'Telangana', constituency:'Warangal', allocation_amount:1200000, project_status:'Completed', project_id:302 },
+            { mp_name:'Sanjay Verma', work_:'Streetlight Installation', state:'Uttar Pradesh', constituency:'Lucknow', allocation_amount:1100000, project_status:'Completed', project_id:303 },
+            { mp_name:'Farida Sheikh', work_:'Public Toilet Complex', state:'Maharashtra', constituency:'Pune', allocation_amount:800000, project_status:'Completed', project_id:304 },
+            { mp_name:'Thomas Kutty', work_:'Rainwater Harvesting Structure', state:'Tamil Nadu', constituency:'Madurai', allocation_amount:1400000, project_status:'Ongoing', project_id:305 },
+            { mp_name:'Gurpreet Kaur', work_:'Village Playground Development', state:'Punjab', constituency:'Ludhiana', allocation_amount:1000000, project_status:'Completed', project_id:306 },
+            { mp_name:'Alok Nath', work_:'Cremation Ground Shed', state:'Bihar', constituency:'Muzaffarpur', allocation_amount:700000, project_status:'Completed', project_id:307 },
+            { mp_name:'Kavya Iyer', work_:'Bus Shelter Construction', state:'Karnataka', constituency:'Mysuru', allocation_amount:600000, project_status:'Completed', project_id:308 },
+            { mp_name:'Manoj Tiwari', work_:'Solar Water Pump Installation', state:'Madhya Pradesh', constituency:'Bhopal', allocation_amount:1800000, project_status:'Ongoing', project_id:309 },
+            { mp_name:'Bina Chatterjee', work_:'Anganwadi Nutrition Kits', state:'West Bengal', constituency:'Kolkata Dakshin', allocation_amount:500000, project_status:'Completed', project_id:310 }
+        ]
+    };
+
+    function loadZone(level) {
+        return fetch('/MPLADs/api/zone-projects?level=' + level)
+            .then(function (res) {
+                if (!res.ok) throw new Error('bad response: ' + res.status);
+                return res.json();
+            })
+            .then(function (data) {
+                return (Array.isArray(data) && data.length) ? data : FALLBACK[level];
+            })
+            .catch(function (e) {
+                console.warn('Falling back to sample data for', level, '-', e.message);
+                return FALLBACK[level];
+            });
+    }
+
+    function money(n) {
+        n = Number(n) || 0;
+        return '₹' + n.toLocaleString('en-IN');
+    }
+
+    function escapeHtml(v) {
+        return String(v === null || v === undefined ? '' : v)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    var pinSeq = 0;
+
+    function buildTooltipHtml(project, zoneClass, zoneLabel) {
+        return '<span class="tt-zone ' + zoneClass + '">' + escapeHtml(zoneLabel) + '</span>' +
+            '<div class="tt-work">' + escapeHtml(project.work_ || project.name || 'Untitled Work') + '</div>' +
+            '<div class="tt-row"><span>MP Name</span><b>' + escapeHtml(project.mp_name || 'N/A') + '</b></div>' +
+            '<div class="tt-row"><span>State</span><b>' + escapeHtml(project.state || 'N/A') + '</b></div>' +
+            '<div class="tt-row"><span>Constituency</span><b>' + escapeHtml(project.constituency || 'N/A') + '</b></div>' +
+            '<div class="tt-row"><span>Allocation</span><b>' + money(project.allocation_amount) + '</b></div>' +
+            '<div class="tt-row"><span>Status</span><b>' + escapeHtml(project.project_status || 'N/A') + '</b></div>';
+    }
+
+    function addPin(project, level) {
+        var coord = coordFor(project.state);
+        if (!coord) return null;
+
+        var zoneClass = ZONE_CLASS[level];
+        var zoneLabel = ZONE_LABEL[level];
+        var id = 'pin-' + (pinSeq++);
+
+        var iconHtml = '<button class="map-pin ' + zoneClass + '" aria-label="' + escapeHtml(project.work_ || 'Project') + '">' +
+            '<svg viewBox="0 0 20 20">' +
+                '<circle class="pin-pulse" cx="10" cy="10" r="8"></circle>' +
+                '<path class="pin-body" d="M10 1c-3.6 0-6.4 2.8-6.4 6.2 0 4.6 6.4 11.3 6.4 11.3s6.4-6.7 6.4-11.3C16.4 3.8 13.6 1 10 1z"></path>' +
+                '<circle cx="10" cy="7.6" r="2.3" fill="#0c2038"></circle>' +
+            '</svg></button>';
+
+        var customIcon = L.divIcon({
+            className: 'custom-pin-wrap',
+            html: iconHtml,
+            iconSize: [20, 20],
+            iconAnchor: [10, 20]
+        });
+
+        var marker = L.marker(coord, { icon: customIcon }).addTo(pinLayer);
+        
+        // Bind Leaflet's native tooltip with our exact custom styling
+        marker.bindTooltip(buildTooltipHtml(project, zoneClass, zoneLabel), {
+            direction: 'top',
+            className: 'custom-leaflet-tooltip',
+            offset: [0, -22]
+        });
+
+        marker.on('click', function () {
+            if (project.project_id) {
+                window.location.href = 'project-details.html?id=' + project.project_id + '&level=' + level;
+            }
+        });
+
+        activeMarkers[id] = marker;
+        return id;
+    }
+
+    function renderList(containerId, countId, target, rows, level) {
+        var container = document.getElementById(containerId);
+        var countEl = document.getElementById(countId);
+        container.innerHTML = '';
+        countEl.textContent = rows.length + ' / ' + target;
+
+        if (!rows.length) {
+            container.innerHTML = '<p class="empty-note">No projects found for this zone.</p>';
+            return;
+        }
+
+        rows.forEach(function (p) {
+            var pinId = addPin(p, level);
+            var item = document.createElement('div');
+            item.className = 'zone-list-item';
+            item.innerHTML =
+                '<span class="pip" style="background:var(--' + ZONE_CLASS[level] + ')"></span>' +
+                '<div>' +
+                    '<div class="zli-work">' + escapeHtml(p.work_ || p.name || 'Untitled Work') + '</div>' +
+                    '<div class="zli-meta">' + escapeHtml(p.mp_name || 'N/A') + ' • ' + escapeHtml(p.state || 'N/A') + ' • ' + money(p.allocation_amount) + '</div>' +
+                '</div>';
+
+            if (pinId) {
+                item.addEventListener('mouseenter', function () {
+                    var marker = activeMarkers[pinId];
+                    if (marker) {
+                        var iconEl = marker.getElement().querySelector('.map-pin');
+                        if (iconEl) iconEl.classList.add('pin-active');
+                        marker.openTooltip();
+                    }
+                });
+                item.addEventListener('mouseleave', function () {
+                    var marker = activeMarkers[pinId];
+                    if (marker) {
+                        var iconEl = marker.getElement().querySelector('.map-pin');
+                        if (iconEl) iconEl.classList.remove('pin-active');
+                        marker.closeTooltip();
+                    }
+                });
+                item.addEventListener('click', function () {
+                    if (p.project_id) window.location.href = 'project-details.html?id=' + p.project_id + '&level=' + level;
+                });
+            }
+            container.appendChild(item);
+        });
+    }
+
+    function init() {
+        pinLayer.clearLayers();
+        activeMarkers = {};
+
+        Promise.all([loadZone('High'), loadZone('Medium'), loadZone('Low')])
+            .then(function (results) {
+                var high = results[0], medium = results[1], low = results[2];
+
+                var redRows    = high.slice(0, ZONE_TARGET.High);
+                var yellowRows = medium.slice(0, ZONE_TARGET.Medium);
+                var greenRows  = low.slice(0, ZONE_TARGET.Low);
+
+                renderList('list-red', 'count-red', ZONE_TARGET.High, redRows, 'High');
+                renderList('list-yellow', 'count-yellow', ZONE_TARGET.Medium, yellowRows, 'Medium');
+                renderList('list-green', 'count-green', ZONE_TARGET.Low, greenRows, 'Low');
+
+                document.getElementById('map-total').textContent = redRows.length + yellowRows.length + greenRows.length;
+            })
+            .catch(function (e) {
+                console.error('Unexpected error while loading the risk map:', e);
+            });
+    }
+
+    init();
+
+    var refreshBtn = document.getElementById('refreshButton');
+    refreshBtn.addEventListener('click', function () {
+        refreshBtn.textContent = '✓ Data Refreshed';
+        init();
+        setTimeout(function () { refreshBtn.textContent = '⟳ Refresh Data'; }, 1200);
+    });
+
+    document.getElementById('mapSearch').addEventListener('input', function () {
+        var q = this.value.toLowerCase().trim();
+        document.querySelectorAll('.zone-list-item').forEach(function (item) {
+            item.style.display = item.textContent.toLowerCase().indexOf(q) !== -1 ? '' : 'none';
+        });
+    });
+
+})();
+</script>
+
+</body>
+</html>

@@ -52,6 +52,7 @@ public class ZoneProjectServlet extends HttpServlet {
         for (int i = 0; i < projects.size(); i++) {
             Project p = projects.get(i);
             out.print("{");
+            out.print("\"ml_id\":" + p.getMlResultId() + ",");
             out.print("\"project_id\":" + p.getProjectId() + ",");
             out.print("\"mp_name\":\"" + escapeJson(p.getMpName()) + "\",");
             out.print("\"work_\":\"" + escapeJson(p.getWork()) + "\",");

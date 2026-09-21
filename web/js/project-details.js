@@ -3,6 +3,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get('id');
 
+    // Where the "Back" link goes: the zone page the user came from (?level=High|Medium|Low)
+    const BACK_LINKS = {
+        high:   { href: 'red-zone.html',    label: '← Back to Red Zone Projects' },
+        medium: { href: 'yellow-zone.html', label: '← Back to Yellow Zone Projects' },
+        low:    { href: 'green-zone.html',  label: '← Back to Green Zone Projects' }
+    };
+    const back = BACK_LINKS[(urlParams.get('level') || '').trim().toLowerCase()]
+        || { href: 'projects.html', label: '← Back to Projects' };
+
     if (!projectId) {
         showError("No Project ID provided in URL.");
         return;
@@ -30,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div style="text-align: center; padding: 80px;">
                 <h2 style="margin-bottom: 1rem;">Error</h2>
                 <p style="margin-bottom: 2rem;">${msg}</p>
-                <a href="projects.html" class="btn-ai" style="display: inline-block; width: auto; padding: 12px 30px;">← Back to Projects</a>
+                <a href="${back.href}" class="btn-ai" style="display: inline-block; width: auto; padding: 12px 30px;">${back.label}</a>
             </div>
         `;
     }
@@ -60,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = `
             <!-- Header -->
             <div class="detail-header">
-                <a href="projects.html" class="back-link">← Back to Projects</a>
+                <a href="${back.href}" class="back-link">${back.label}</a>
                 <div class="detail-status">
                     <span class="status-pill ${pillClass}">${status}</span>
                 </div>
@@ -119,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- AI RISK ASSESSMENT -->
                 <div class="ai-card">
                     <h3>AI Risk Assessment</h3>
-                    <button class="btn-ai" id="run-analysis-btn" onclick="runAnalysis(${p.project_id})">Run AI Analysis →</button>
+                    <button class="btn-ai" id="run-analysis-btn" onclick="runAnalysis(${p.project_id})">Run Analysis →</button>
                     <div id="analysis-result"></div>
                 </div>
             </div>
@@ -197,9 +206,9 @@ function showAnalysisResult(a) {
         ['Risk Level', '<span style="display:inline-block; padding:3px 12px; border-radius:20px; font-weight:700; ' +
             'color:' + c.fg + '; background:' + c.bg + ';">' + escapeHtml(level) + '</span>'],
         ['Anomaly Score', isNaN(anomaly) ? 'N/A' : anomaly.toFixed(3)],
-        ['Recommendation', escapeHtml(a.recommendation || 'No anomalies detected.')],
-        ['Model Version', escapeHtml(a.model_version || 'N/A')]
+        ['Recommendation', escapeHtml(a.recommendation || 'No anomalies detected.')]
     ];
+    if (a.model_version) rows.push(['Model Version', escapeHtml(a.model_version)]);
 
     const cell = 'padding:10px 8px; border-bottom:1px solid rgba(255,255,255,0.08); vertical-align:top;';
     box.innerHTML =
@@ -217,7 +226,9 @@ function runAnalysis(projectId) {
     if (box) box.innerHTML = '';
     if (btn) { btn.textContent = 'Analyzing...'; btn.disabled = true; }
 
-    fetch('/MPLADs/api/analyze?id=' + encodeURIComponent(projectId))
+    // zone the user came from (red/yellow/green page adds &level=High|Medium|Low)
+    const level = new URLSearchParams(window.location.search).get('level');
+    fetch('/MPLADs/api/analyze?id=' + encodeURIComponent(projectId) + (level ? '&level=' + encodeURIComponent(level) : ''))
         .then(r => r.json().catch(() => ({ error: 'Invalid response from server.' }))
             .then(data => ({ ok: r.ok, data })))
         .then(({ ok, data }) => {
@@ -229,9 +240,9 @@ function runAnalysis(projectId) {
         })
         .catch(e => {
             console.log('ML Service unavailable:', e);
-            showAnalysisError('ML Service is not running. Start the Flask server first.');
+            showAnalysisError('Could not load the risk result. Make sure the Tomcat server is running.');
         })
         .finally(() => {
-            if (btn) { btn.textContent = 'Run AI Analysis →'; btn.disabled = false; }
+            if (btn) { btn.textContent = 'Run Analysis →'; btn.disabled = false; }
         });
 }

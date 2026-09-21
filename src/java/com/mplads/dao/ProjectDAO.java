@@ -11,7 +11,7 @@ public class ProjectDAO {
 
     public List<Project> getAllProjects() {
         List<Project> projects = new ArrayList<>();
-        String sql = "SELECT * FROM project";
+        String sql = "SELECT * FROM projectt";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -40,7 +40,7 @@ public class ProjectDAO {
     }
 
     public Project getProjectById(String id) {
-        String sql = "SELECT * FROM projects WHERE project_id = ?";
+        String sql = "SELECT * FROM projectt WHERE project_id = ?";
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 

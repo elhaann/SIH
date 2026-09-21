@@ -1,115 +1,513 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>MPLADS — Monitoring & Risk Analytics</title>
-    <link rel="stylesheet" href="css/landing.css">
+
+    <!-- Cache-busting version -->
+    <link rel="stylesheet" href="css/landing.css?v=3">
 </head>
+
 <body class="landing">
+
+    <!-- =====================================================
+         PUBLIC NAVIGATION
+    ====================================================== -->
+
     <header class="public-nav">
+
+        <!-- BRAND -->
         <a class="brand" href="index.html">
+
             <span class="crest">M</span>
-            <span>MPLADS<small>Monitoring & Risk Analytics</small></span>
+
+            <span class="brand-name">
+                MPLADS
+                <small>Monitoring & Risk Analytics</small>
+            </span>
+
         </a>
+
+
+        <!-- NAVIGATION -->
         <nav>
-            <a href="#overview">Platform</a>
-            <a href="#how">How it works</a>
-            <a href="#security">Security</a>
-            <a class="btn btn-outline" href="login.html">Official Login</a>
+
+            <a href="#overview">
+                Platform
+            </a>
+
+            <a href="#how">
+                How it works
+            </a>
+
+            <a href="#security">
+                Security
+            </a>
+
+
+            <!-- OFFICIAL LOGIN -->
+            <a
+                class="btn btn-outline"
+                href="login.html"
+            >
+                Official Login
+            </a>
+
+
+            <!-- ADMINISTRATOR LOGIN -->
+            <a
+                class="btn btn-admin"
+                href="admin-login.html"
+            >
+                Administrator Login
+            </a>
+
         </nav>
+
     </header>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
     <main>
+
+
+        <!-- =================================================
+             HERO
+        ================================================== -->
+
         <section class="hero">
+
+            <!-- LEFT CONTENT -->
+
             <div class="hero-copy">
-                <p class="eyebrow light">Prototype • Smart India Hackathon 2026</p>
-                <h1>Smarter Monitoring.<br><em>Earlier Risk Identification.</em></h1>
-                <p>An AI-assisted platform for analyzing development project data, identifying unusual patterns and supporting priority-based verification.</p>
+
+                <p class="eyebrow light">
+                    Prototype • Smart India Hackathon 2026
+                </p>
+
+
+                <h1>
+                    Smarter Monitoring.
+                    <br>
+                    <em>Earlier Risk Identification.</em>
+                </h1>
+
+
+                <p class="lead">
+
+                    An AI-assisted platform for analyzing
+                    development project data, identifying
+                    unusual patterns and supporting
+                    priority-based verification.
+
+                </p>
+
+
+                <!-- ACTIONS -->
+
                 <div class="hero-actions">
-                    <a class="btn btn-gold" href="login.html">Official Login <b>→</b></a>
-                    <a class="text-link" href="#overview">Explore Platform <b>↓</b></a>
+
+                    <a
+                        class="btn btn-gold"
+                        href="login.html"
+                    >
+                        Official Login
+                        <b>→</b>
+                    </a>
+
+
+                    <a
+                        class="text-link"
+                        href="#overview"
+                    >
+                        Explore Platform
+                        <b>↓</b>
+                    </a>
+
                 </div>
+
+
+                <!-- STATS -->
+
                 <div class="hero-stat">
-                    <span><b>1,234</b> project records</span>
-                    <span><b>03</b> risk zones</span>
-                    <span><b>24×7</b> monitoring view</span>
+
+                    <span>
+                        <b>56K+</b>
+                        project records
+                    </span>
+
+                    <span>
+                        <b>03</b>
+                        risk zones
+                    </span>
+
+                    <span>
+                        <b>24×7</b>
+                        monitoring view
+                    </span>
+
                 </div>
+
             </div>
+
+
+            <!-- =================================================
+                 HERO VISUAL
+            ================================================== -->
+
             <div class="hero-panel">
-                <div class="orbit o1"></div>
-                <div class="orbit o2"></div>
+
                 <div class="map-grid"></div>
+
+                <div class="orbit o1"></div>
+
+                <div class="orbit o2"></div>
+
+
+                <!-- Risk points -->
+
                 <div class="pulse p1"></div>
+
                 <div class="pulse p2"></div>
+
                 <div class="pulse p3"></div>
+
+
+                <!-- Risk card -->
+
                 <div class="floating-card card-a">
-                    <small>Risk monitoring</small>
-                    <b>Priority signals</b>
-                    <i class="dot red"></i>
+
+                    <small>
+                        Risk Monitoring
+                    </small>
+
+                    <b>
+                        Priority signals
+
+                        <i class="dot red"></i>
+                    </b>
+
                 </div>
+
+
+                <!-- Dataset card -->
+
                 <div class="floating-card card-b">
-                    <small>Coverage</small>
-                    <b>36 States & UTs</b>
+
+                    <small>
+                        Dataset Coverage
+                    </small>
+
+                    <b>
+                        56K+ Project Records
+                    </b>
+
                 </div>
+
             </div>
+
         </section>
-        <section id="overview" class="content-section">
-            <p class="eyebrow">Platform overview</p>
-            <h2>A clearer view of project progress and priority signals.</h2>
-            <p class="lead">Designed for authorized officials to focus attention where a further review may be most valuable.</p>
+
+
+        <!-- =================================================
+             PLATFORM OVERVIEW
+        ================================================== -->
+
+        <section
+            id="overview"
+            class="content-section"
+        >
+
+            <p class="eyebrow">
+                Platform Overview
+            </p>
+
+
+            <h2>
+                A clearer view of project progress
+                and priority signals.
+            </h2>
+
+
+            <p class="lead">
+
+                Designed for authorized officials to focus
+                attention on projects showing stronger
+                risk or anomaly signals.
+
+            </p>
+
+
             <div class="feature-grid">
+
+
+                <!-- FEATURE 1 -->
+
                 <article>
-                    <span class="feature-icon">⌘</span>
-                    <h3>Unified project registry</h3>
-                    <p>Search and review development projects through one structured operational view.</p>
+
+                    <span class="feature-icon">
+                        ⌘
+                    </span>
+
+                    <h3>
+                        Unified Project Registry
+                    </h3>
+
+                    <p>
+
+                        Search and review MPLADS development
+                        projects through one structured
+                        operational view.
+
+                    </p>
+
                 </article>
+
+
+                <!-- FEATURE 2 -->
+
                 <article>
-                    <span class="feature-icon">◌</span>
-                    <h3>Risk-led prioritization</h3>
-                    <p>Organize records by indicators that support informed verification workflows.</p>
+
+                    <span class="feature-icon">
+                        ◌
+                    </span>
+
+                    <h3>
+                        AI Risk Prioritization
+                    </h3>
+
+                    <p>
+
+                        Use project-level patterns and
+                        anomaly signals to prioritize
+                        projects for further review.
+
+                    </p>
+
                 </article>
+
+
+                <!-- FEATURE 3 -->
+
                 <article>
-                    <span class="feature-icon">↗</span>
-                    <h3>Decision-ready context</h3>
-                    <p>Bring financial, location and project status details into a single review surface.</p>
+
+                    <span class="feature-icon">
+                        ↗
+                    </span>
+
+                    <h3>
+                        Decision-Ready Context
+                    </h3>
+
+                    <p>
+
+                        Bring project attributes, allocation,
+                        status, approval and location details
+                        into a single review surface.
+
+                    </p>
+
                 </article>
+
             </div>
+
         </section>
-        <section id="how" class="process">
+
+
+        <!-- =================================================
+             HOW IT WORKS
+        ================================================== -->
+
+        <section
+            id="how"
+            class="process"
+        >
+
             <div>
-                <p class="eyebrow">How it works</p>
-                <h2>From records to a focused review.</h2>
+
+                <p class="eyebrow">
+                    How It Works
+                </p>
+
+
+                <h2>
+                    From project records
+                    to a focused review queue.
+                </h2>
+
             </div>
+
+
             <div class="steps">
+
+
+                <!-- STEP 01 -->
+
                 <div>
+
                     <b>01</b>
-                    <h3>Consolidate</h3>
-                    <p>Review project information in a consistent registry.</p>
+
+                    <h3>
+                        Consolidate
+                    </h3>
+
+                    <p>
+
+                        Project information is collected
+                        into a structured registry for
+                        consistent analysis.
+
+                    </p>
+
                 </div>
+
+
+                <!-- STEP 02 -->
+
                 <div>
+
                     <b>02</b>
-                    <h3>Assess</h3>
-                    <p>Surface unusual patterns using assisted indicators.</p>
+
+                    <h3>
+                        Assess
+                    </h3>
+
+                    <p>
+
+                        The AI risk engine analyzes available
+                        project attributes and identifies
+                        unusual patterns.
+
+                    </p>
+
                 </div>
+
+
+                <!-- STEP 03 -->
+
                 <div>
+
                     <b>03</b>
-                    <h3>Verify</h3>
-                    <p>Prioritize actions with a clear audit context.</p>
+
+                    <h3>
+                        Prioritize
+                    </h3>
+
+                    <p>
+
+                        Projects are organized into
+                        Red, Yellow and Green risk zones
+                        using the generated risk signals.
+
+                    </p>
+
                 </div>
+
+
+                <!-- STEP 04 -->
+
+                <div>
+
+                    <b>04</b>
+
+                    <h3>
+                        Verify
+                    </h3>
+
+                    <p>
+
+                        Authorized officials review project
+                        details, risk reasons and evidence
+                        before taking action.
+
+                    </p>
+
+                </div>
+
             </div>
+
         </section>
-        <section id="security" class="security">
+
+
+        <!-- =================================================
+             SECURITY
+        ================================================== -->
+
+        <section
+            id="security"
+            class="security"
+        >
+
             <div>
-                <p class="eyebrow light">Authorized access</p>
-                <h2>Built for responsible review.</h2>
-                <p>This demonstration prototype uses simulated data only. Access flows are designed around official verification and responsible use.</p>
+
+                <p class="eyebrow light">
+                    Authorized Access
+                </p>
+
+
+                <h2>
+                    Built for responsible review.
+                </h2>
+
+
+                <p>
+
+                    The platform separates official and
+                    administrator access while using
+                    risk-based analytics to support
+                    responsible project monitoring.
+
+                </p>
+
             </div>
-            <a class="btn btn-gold" href="login.html">Request Official Access</a>
+
+
+            <div class="security-actions">
+
+                <a
+                    class="btn btn-gold"
+                    href="login.html"
+                >
+                    Official Login
+                </a>
+
+
+                <a
+                    class="btn btn-admin"
+                    href="admin-login.html"
+                >
+                    Administrator Login
+                </a>
+
+            </div>
+
         </section>
+
     </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
     <footer>
-        <span>© 2026 MPLADS Monitoring & Risk Analytics</span>
-        <span>Prototype demonstration — not an official government portal</span>
+
+        <span>
+            © 2026 MPLADS Monitoring & Risk Analytics
+        </span>
+
+        <span>
+            Prototype demonstration — not an official government portal
+        </span>
+
     </footer>
+
 </body>
+
 </html>

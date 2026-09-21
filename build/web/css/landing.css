@@ -1,179 +1,2618 @@
-/* Modern, high-end government tech aesthetic */
+/* =========================================================
+   MPLADS — Monitoring & Risk Analytics
+   Landing + Authentication Pages
+   ========================================================= */
+
+
+/* =========================================================
+   ROOT VARIABLES
+   ========================================================= */
+
 :root {
     --bg-dark: #0a0f18;
     --bg-card: #111827;
+    --bg-card-soft: #151e2d;
+
     --text-main: #f3f4f6;
     --text-muted: #9ca3af;
+    --text-soft: #cbd5e1;
+
     --gold: #d4af37;
     --gold-hover: #fcd34d;
+
     --accent-blue: #3b82f6;
-    --border-light: rgba(255, 255, 255, 0.1);
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --accent-green: #22c55e;
+    --accent-red: #ef4444;
+    --accent-yellow: #f59e0b;
+
+    --border-light: rgba(255, 255, 255, 0.10);
+    --border-hover: rgba(255, 255, 255, 0.20);
+
+    --font-sans:
+        'Inter',
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: var(--font-sans); line-height: 1.5; }
 
-body.landing, body.auth {
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+body.landing,
+body.auth {
     background-color: var(--bg-dark);
     color: var(--text-main);
     overflow-x: hidden;
 }
 
-/* Typography */
-h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
-h1 em { color: var(--gold); font-style: normal; }
-h2 { font-size: 2.5rem; font-weight: 600; margin-bottom: 1rem; letter-spacing: -0.01em; }
-h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #fff; }
-p { color: var(--text-muted); font-size: 1.125rem; }
-.eyebrow { text-transform: uppercase; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-blue); margin-bottom: 1rem; }
-.eyebrow.light { color: var(--gold); }
-
-/* Buttons & Links */
-.btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: all 0.2s ease; cursor: pointer; border: none; }
-.btn.full { width: 100%; margin-top: 1.5rem; }
-.btn-gold { background: var(--gold); color: #000; }
-.btn-gold:hover { background: var(--gold-hover); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3); }
-.btn-outline { background: transparent; color: #fff; border: 1px solid var(--border-light); }
-.btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.05); }
-.text-link { color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: color 0.2s ease; }
-.text-link:hover, a:hover { color: var(--gold); }
-a { color: var(--gold); text-decoration: none; transition: color 0.2s ease; }
-
-/* Brand */
-.brand { display: inline-flex; align-items: center; gap: 1rem; text-decoration: none; color: #fff; }
-.brand .crest { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: var(--gold); color: #000; font-weight: 800; font-size: 1.5rem; border-radius: 8px; }
-.brand span { font-weight: 700; font-size: 1.25rem; display: flex; flex-direction: column; line-height: 1.1; }
-.brand small { font-weight: 400; font-size: 0.75rem; color: var(--text-muted); }
-
-/* Header Navigation (Landing only) */
-.public-nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4%; position: fixed; top: 0; left: 0; right: 0; background: rgba(10, 15, 24, 0.8); backdrop-filter: blur(12px); z-index: 100; border-bottom: 1px solid var(--border-light); }
-.public-nav nav { display: flex; gap: 2rem; align-items: center; }
-.public-nav nav a:not(.btn) { color: var(--text-muted); }
-
-/* Landing Layout elements ... */
-.hero { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; padding: 12rem 4% 8rem 4%; min-height: 100vh; align-items: center; position: relative; overflow: hidden; }
-.hero-copy { position: relative; z-index: 10; max-width: 600px; }
-.hero-copy > p.lead { margin-bottom: 2.5rem; font-size: 1.25rem; }
-.hero-actions { display: flex; align-items: center; gap: 2rem; margin-top: 2.5rem; }
-.hero-stat { margin-top: 4rem; display: flex; gap: 2rem; border-top: 1px solid var(--border-light); padding-top: 2rem; }
-.hero-stat span { display: flex; flex-direction: column; font-size: 0.85rem; color: var(--text-muted); }
-.hero-stat b { font-size: 1.5rem; color: #fff; margin-bottom: 0.25rem; }
-
-/* ... Rest of landing CSS omitted for brevity but I need to include it ... */
-.hero-panel { position: relative; height: 500px; display: flex; justify-content: center; align-items: center; }
-.map-grid { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; -webkit-mask-image: radial-gradient(circle at center, black, transparent 70%); }
-.orbit { position: absolute; border: 1px dashed var(--border-light); border-radius: 50%; animation: spin 30s linear infinite; }
-.orbit.o1 { width: 300px; height: 300px; }
-.orbit.o2 { width: 450px; height: 450px; animation-direction: reverse; animation-duration: 40s; }
-.pulse { position: absolute; width: 12px; height: 12px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 20px var(--gold); }
-.pulse::after { content: ''; position: absolute; width: 100%; height: 100%; background: var(--gold); border-radius: 50%; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
-.p1 { top: 30%; left: 40%; }
-.p2 { top: 60%; right: 30%; background: #ef4444; box-shadow: 0 0 20px #ef4444; }
-.p2::after { background: #ef4444; animation-delay: 1s; }
-.p3 { bottom: 20%; left: 50%; }
-
-.floating-card { position: absolute; background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); border: 1px solid var(--border-light); padding: 1rem 1.5rem; border-radius: 12px; display: flex; flex-direction: column; gap: 0.25rem; box-shadow: 0 20px 40px rgba(0,0,0,0.4); animation: float 6s ease-in-out infinite; }
-.floating-card small { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-.floating-card b { color: #fff; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-.floating-card .dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 10px #ef4444; }
-.card-a { top: 15%; right: 10%; }
-.card-b { bottom: 15%; left: 10%; animation-delay: -3s; }
-
-.content-section, .process, .security { padding: 6rem 4%; max-width: 1200px; margin: 0 auto; }
-.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; margin-top: 4rem; }
-.feature-icon { display: inline-flex; width: 48px; height: 48px; background: rgba(212, 175, 55, 0.1); color: var(--gold); border-radius: 12px; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.5rem; }
-.process { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; background: var(--bg-card); border-radius: 24px; padding: 6rem; margin: 4rem auto; }
-.steps { display: flex; flex-direction: column; gap: 3rem; }
-.steps b { color: var(--gold); font-family: monospace; font-size: 1.25rem; display: block; margin-bottom: 0.5rem; }
-.security { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 40vh; }
-footer { text-align: center; padding: 3rem 4%; border-top: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 0.5rem; color: var(--text-muted); font-size: 0.85rem; }
-
-
-/* ==================================================
-   Auth / Login Layout
-   ================================================== */
-body.auth {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    padding: 2rem 4%;
+img {
+    max-width: 100%;
+    display: block;
 }
-.auth-brand { position: absolute; top: 2rem; left: 4%; }
-.auth-layout {
-    display: grid;
-    grid-template-columns: 1fr 450px;
-    gap: 6rem;
-    max-width: 1200px;
-    margin: auto;
+
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
+}
+
+
+/* =========================================================
+   TYPOGRAPHY
+   ========================================================= */
+
+h1 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+
+    margin-bottom: 1.5rem;
+
+    font-weight: 700;
+
+    letter-spacing: -0.02em;
+}
+
+h1 em {
+    color: var(--gold);
+    font-style: normal;
+}
+
+h2 {
+    font-size: 2.5rem;
+    line-height: 1.15;
+
+    font-weight: 600;
+
+    margin-bottom: 1rem;
+
+    letter-spacing: -0.01em;
+}
+
+h3 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+
+    margin-bottom: 0.5rem;
+
+    color: #fff;
+}
+
+p {
+    color: var(--text-muted);
+    font-size: 1.125rem;
+}
+
+
+/* =========================================================
+   EYEBROW
+   ========================================================= */
+
+.eyebrow {
+    text-transform: uppercase;
+
+    font-size: 0.75rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.1em;
+
+    color: var(--accent-blue);
+
+    margin-bottom: 1rem;
+}
+
+.eyebrow.light {
+    color: var(--gold);
+}
+
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+a {
+    color: var(--gold);
+
+    text-decoration: none;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+a:hover {
+    color: var(--gold-hover);
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.btn {
+    display: inline-flex;
+
     align-items: center;
+    justify-content: center;
+
+    padding: 0.75rem 1.5rem;
+
+    border-radius: 6px;
+
+    font-weight: 600;
+    font-size: 0.95rem;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    border: 1px solid transparent;
+
+    white-space: nowrap;
+
+    transition: all 0.2s ease;
+}
+
+.btn.full {
     width: 100%;
+    margin-top: 1.5rem;
 }
-.auth-aside h1 { font-size: 3rem; margin-bottom: 1rem; }
-.auth-aside p { margin-bottom: 2rem; }
-.mini-points {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+
+
+/* =========================================================
+   GOLD BUTTON
+   ========================================================= */
+
+.btn-gold {
+    background: var(--gold);
+    color: #000;
+}
+
+.btn-gold:hover {
+    background: var(--gold-hover);
+    color: #000;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 4px 12px
+        rgba(212, 175, 55, 0.30);
+}
+
+
+/* =========================================================
+   OUTLINE BUTTON
+   ========================================================= */
+
+.btn-outline {
+    background: transparent;
+
+    color: #fff;
+
+    border:
+        1px solid
+        var(--border-light);
+}
+
+.btn-outline:hover {
+    color: #fff;
+
+    border-color: #fff;
+
+    background:
+        rgba(255, 255, 255, 0.05);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   ADMINISTRATOR LOGIN BUTTON
+   ========================================================= */
+
+.btn-admin {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0.75rem 1.35rem;
+
+    border-radius: 6px;
+
+    background: transparent;
+
+    color:
+        var(--gold) !important;
+
+    border:
+        1px solid
+        rgba(212, 175, 55, 0.55);
+
+    font-weight: 600;
+
+    font-size: 0.95rem;
+
+    white-space: nowrap;
+
+    transition:
+        all 0.25s ease;
+}
+
+.btn-admin:hover {
+    background:
+        var(--gold);
+
+    color:
+        #000 !important;
+
+    border-color:
+        var(--gold);
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 6px 18px
+        rgba(212, 175, 55, 0.18);
+}
+
+
+/* =========================================================
+   TEXT LINK
+   ========================================================= */
+
+.text-link {
     color: var(--text-main);
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+    font-size: 0.95rem;
 }
-.mini-points span { font-weight: 500; }
+
+.text-link:hover {
+    color: var(--gold);
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.brand {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 1rem;
+
+    text-decoration: none;
+
+    color: #fff;
+}
+
+.brand .crest {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+
+    background:
+        var(--gold);
+
+    color:
+        #000;
+
+    font-weight:
+        800;
+
+    font-size:
+        1.5rem;
+
+    border-radius:
+        8px;
+
+    flex-shrink:
+        0;
+}
+
+.brand-name {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    line-height:
+        1.1;
+
+    font-weight:
+        700;
+
+    font-size:
+        1.25rem;
+}
+
+.brand small {
+    margin-top:
+        3px;
+
+    font-weight:
+        400;
+
+    font-size:
+        0.75rem;
+
+    color:
+        var(--text-muted);
+}
+
+
+/* =========================================================
+   PUBLIC NAVIGATION
+   ========================================================= */
+
+.public-nav {
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    padding:
+        1.5rem 4%;
+
+    position:
+        fixed;
+
+    top:
+        0;
+
+    left:
+        0;
+
+    right:
+        0;
+
+    background:
+        rgba(10, 15, 24, 0.82);
+
+    backdrop-filter:
+        blur(12px);
+
+    -webkit-backdrop-filter:
+        blur(12px);
+
+    z-index:
+        100;
+
+    border-bottom:
+        1px solid
+        var(--border-light);
+}
+
+.public-nav nav {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        1.2rem;
+}
+
+.public-nav nav a:not(.btn) {
+    color:
+        var(--text-muted);
+
+    font-size:
+        0.95rem;
+
+    font-weight:
+        500;
+}
+
+.public-nav nav a:not(.btn):hover {
+    color:
+        #fff;
+}
+
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero {
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    gap:
+        4rem;
+
+    padding:
+        12rem 4% 8rem;
+
+    min-height:
+        100vh;
+
+    align-items:
+        center;
+
+    position:
+        relative;
+
+    overflow:
+        hidden;
+}
+
+.hero-copy {
+    position:
+        relative;
+
+    z-index:
+        10;
+
+    max-width:
+        650px;
+}
+
+.hero-copy > p {
+    max-width:
+        650px;
+}
+
+.hero-copy > p.lead {
+    margin-bottom:
+        2.5rem;
+
+    font-size:
+        1.25rem;
+}
+
+
+/* =========================================================
+   HERO ACTIONS
+   ========================================================= */
+
+.hero-actions {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        2rem;
+
+    margin-top:
+        2.5rem;
+}
+
+
+/* =========================================================
+   HERO STATS
+   ========================================================= */
+
+.hero-stat {
+    margin-top:
+        4rem;
+
+    display:
+        flex;
+
+    gap:
+        2rem;
+
+    border-top:
+        1px solid
+        var(--border-light);
+
+    padding-top:
+        2rem;
+}
+
+.hero-stat span {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    font-size:
+        0.85rem;
+
+    color:
+        var(--text-muted);
+
+    min-width:
+        100px;
+}
+
+.hero-stat b {
+    font-size:
+        1.5rem;
+
+    color:
+        #fff;
+
+    margin-bottom:
+        0.25rem;
+}
+
+
+/* =========================================================
+   HERO PANEL
+   ========================================================= */
+
+.hero-panel {
+    position:
+        relative;
+
+    height:
+        500px;
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+}
+
+
+/* =========================================================
+   GRID
+   ========================================================= */
+
+.map-grid {
+    position:
+        absolute;
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    background-image:
+        linear-gradient(
+            rgba(255, 255, 255, 0.03) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.03) 1px,
+            transparent 1px
+        );
+
+    background-size:
+        40px 40px;
+
+    -webkit-mask-image:
+        radial-gradient(
+            circle at center,
+            black,
+            transparent 70%
+        );
+
+    mask-image:
+        radial-gradient(
+            circle at center,
+            black,
+            transparent 70%
+        );
+}
+
+
+/* =========================================================
+   ORBITS
+   ========================================================= */
+
+.orbit {
+    position:
+        absolute;
+
+    border:
+        1px dashed
+        var(--border-light);
+
+    border-radius:
+        50%;
+
+    animation:
+        spin
+        30s
+        linear
+        infinite;
+}
+
+.orbit.o1 {
+    width:
+        300px;
+
+    height:
+        300px;
+}
+
+.orbit.o2 {
+    width:
+        450px;
+
+    height:
+        450px;
+
+    animation-direction:
+        reverse;
+
+    animation-duration:
+        40s;
+}
+
+
+/* =========================================================
+   RISK PULSES
+   ========================================================= */
+
+.pulse {
+    position:
+        absolute;
+
+    width:
+        12px;
+
+    height:
+        12px;
+
+    background:
+        var(--gold);
+
+    border-radius:
+        50%;
+
+    box-shadow:
+        0 0 20px
+        var(--gold);
+}
+
+.pulse::after {
+    content:
+        '';
+
+    position:
+        absolute;
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    background:
+        var(--gold);
+
+    border-radius:
+        50%;
+
+    animation:
+        ping
+        2s
+        cubic-bezier(
+            0,
+            0,
+            0.2,
+            1
+        )
+        infinite;
+}
+
+.p1 {
+    top:
+        30%;
+
+    left:
+        40%;
+}
+
+.p2 {
+    top:
+        60%;
+
+    right:
+        30%;
+
+    background:
+        var(--accent-red);
+
+    box-shadow:
+        0 0 20px
+        var(--accent-red);
+}
+
+.p2::after {
+    background:
+        var(--accent-red);
+
+    animation-delay:
+        1s;
+}
+
+.p3 {
+    bottom:
+        20%;
+
+    left:
+        50%;
+}
+
+
+/* =========================================================
+   FLOATING CARDS
+   ========================================================= */
+
+.floating-card {
+    position:
+        absolute;
+
+    background:
+        rgba(17, 24, 39, 0.82);
+
+    backdrop-filter:
+        blur(12px);
+
+    -webkit-backdrop-filter:
+        blur(12px);
+
+    border:
+        1px solid
+        var(--border-light);
+
+    padding:
+        1rem 1.5rem;
+
+    border-radius:
+        12px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        0.25rem;
+
+    box-shadow:
+        0 20px 40px
+        rgba(0, 0, 0, 0.40);
+
+    animation:
+        float
+        6s
+        ease-in-out
+        infinite;
+
+    z-index:
+        5;
+}
+
+.floating-card small {
+    color:
+        var(--text-muted);
+
+    font-size:
+        0.75rem;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        0.05em;
+}
+
+.floating-card b {
+    color:
+        #fff;
+
+    font-size:
+        1rem;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        0.5rem;
+}
+
+.floating-card .dot {
+    width:
+        8px;
+
+    height:
+        8px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--accent-red);
+
+    box-shadow:
+        0 0 10px
+        var(--accent-red);
+}
+
+.card-a {
+    top:
+        15%;
+
+    right:
+        10%;
+}
+
+.card-b {
+    bottom:
+        15%;
+
+    left:
+        10%;
+
+    animation-delay:
+        -3s;
+}
+
+
+/* =========================================================
+   PLATFORM OVERVIEW
+   ========================================================= */
+
+.content-section {
+    padding:
+        6rem 4%;
+
+    max-width:
+        1200px;
+
+    margin:
+        0 auto;
+}
+
+.content-section h2 {
+    max-width:
+        800px;
+}
+
+.content-section .lead {
+    max-width:
+        720px;
+
+    margin-bottom:
+        2rem;
+}
+
+
+/* =========================================================
+   FEATURE GRID
+   ========================================================= */
+
+.feature-grid {
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                300px,
+                1fr
+            )
+        );
+
+    gap:
+        2rem;
+
+    margin-top:
+        4rem;
+}
+
+.feature-grid article {
+    padding:
+        2rem;
+
+    border:
+        1px solid
+        var(--border-light);
+
+    border-radius:
+        16px;
+
+    background:
+        rgba(17, 24, 39, 0.60);
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease;
+}
+
+.feature-grid article:hover {
+    transform:
+        translateY(-6px);
+
+    border-color:
+        rgba(212, 175, 55, 0.40);
+
+    background:
+        rgba(17, 24, 39, 0.90);
+}
+
+.feature-grid article p {
+    font-size:
+        1rem;
+
+    line-height:
+        1.7;
+}
+
+
+/* =========================================================
+   FEATURE ICON
+   ========================================================= */
+
+.feature-icon {
+    display:
+        inline-flex;
+
+    width:
+        48px;
+
+    height:
+        48px;
+
+    background:
+        rgba(212, 175, 55, 0.10);
+
+    color:
+        var(--gold);
+
+    border-radius:
+        12px;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    font-size:
+        1.5rem;
+
+    margin-bottom:
+        1.5rem;
+
+    border:
+        1px solid
+        rgba(212, 175, 55, 0.15);
+}
+
+
+/* =========================================================
+   HOW IT WORKS
+   ========================================================= */
+
+.process {
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        4rem;
+
+    background:
+        var(--bg-card);
+
+    border-radius:
+        24px;
+
+    padding:
+        6rem;
+
+    margin:
+        4rem auto;
+
+    max-width:
+        1200px;
+}
+
+.process h2 {
+    max-width:
+        450px;
+}
+
+
+/* =========================================================
+   STEPS
+   ========================================================= */
+
+.steps {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        3rem;
+}
+
+.steps > div {
+    position:
+        relative;
+}
+
+.steps b {
+    color:
+        var(--gold);
+
+    font-family:
+        monospace;
+
+    font-size:
+        1.25rem;
+
+    display:
+        block;
+
+    margin-bottom:
+        0.5rem;
+
+    letter-spacing:
+        0.08em;
+}
+
+.steps h3 {
+    margin-bottom:
+        0.4rem;
+}
+
+.steps p {
+    font-size:
+        1rem;
+
+    line-height:
+        1.7;
+}
+
+
+/* =========================================================
+   SECURITY
+   ========================================================= */
+
+.security {
+    padding:
+        6rem 4%;
+
+    max-width:
+        1200px;
+
+    margin:
+        0 auto;
+
+    text-align:
+        center;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    min-height:
+        40vh;
+}
+
+.security > div:first-child {
+    max-width:
+        750px;
+
+    margin-bottom:
+        2rem;
+}
+
+.security p {
+    max-width:
+        700px;
+
+    margin:
+        0 auto;
+}
+
+.security-actions {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        1rem;
+
+    flex-wrap:
+        wrap;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer {
+    text-align:
+        center;
+
+    padding:
+        3rem 4%;
+
+    border-top:
+        1px solid
+        var(--border-light);
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        0.5rem;
+
+    color:
+        var(--text-muted);
+
+    font-size:
+        0.85rem;
+}
+
+
+/* =========================================================
+   AUTH PAGE
+   ========================================================= */
+
+body.auth {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    min-height:
+        100vh;
+
+    padding:
+        2rem 4%;
+}
+
+
+/* =========================================================
+   AUTH BRAND
+   ========================================================= */
+
+.auth-brand {
+    position:
+        absolute;
+
+    top:
+        2rem;
+
+    left:
+        4%;
+}
+
+
+/* =========================================================
+   AUTH LAYOUT
+   ========================================================= */
+
+.auth-layout {
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        450px;
+
+    gap:
+        6rem;
+
+    max-width:
+        1200px;
+
+    margin:
+        auto;
+
+    align-items:
+        center;
+
+    width:
+        100%;
+}
+
+
+/* =========================================================
+   AUTH ASIDE
+   ========================================================= */
+
+.auth-aside h1 {
+    font-size:
+        3rem;
+
+    margin-bottom:
+        1rem;
+}
+
+.auth-aside p {
+    margin-bottom:
+        2rem;
+
+    max-width:
+        600px;
+}
+
+
+/* =========================================================
+   MINI POINTS
+   ========================================================= */
+
+.mini-points {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        1rem;
+}
+
+.mini-points span {
+    font-weight:
+        500;
+
+    color:
+        var(--text-soft);
+}
+
+
+/* =========================================================
+   AUTH CARD
+   ========================================================= */
 
 .auth-card {
-    background: var(--bg-card);
-    padding: 3rem;
-    border-radius: 16px;
-    border: 1px solid var(--border-light);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    background:
+        var(--bg-card);
+
+    padding:
+        3rem;
+
+    border-radius:
+        16px;
+
+    border:
+        1px solid
+        var(--border-light);
+
+    box-shadow:
+        0 25px 50px -12px
+        rgba(0, 0, 0, 0.50);
 }
-.auth-card h2 { font-size: 1.75rem; margin-bottom: 0.5rem; }
-.auth-card p { font-size: 0.95rem; margin-bottom: 2rem; }
 
-/* Forms */
-form label { display: block; margin-bottom: 1.25rem; font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
-form input[type="text"], form input[type="password"] {
-    width: 100%;
-    padding: 0.85rem 1rem;
-    margin-top: 0.5rem;
-    background: var(--bg-dark);
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
-    color: #fff;
-    font-family: inherit;
-    font-size: 1rem;
-    transition: border-color 0.2s;
+.auth-card h2 {
+    font-size:
+        1.75rem;
+
+    margin-bottom:
+        0.5rem;
 }
-form input:focus { outline: none; border-color: var(--gold); }
-.input-wrap { display: flex; position: relative; }
-.input-wrap button.eye {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
+
+.auth-card > p {
+    font-size:
+        0.95rem;
+
+    margin-bottom:
+        2rem;
 }
-.input-wrap button.eye:hover { color: #fff; }
 
-.form-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.9rem; }
-.check { display: flex; align-items: center; gap: 0.5rem; margin: 0; color: var(--text-main); cursor: pointer; }
-.check input { width: 16px; height: 16px; accent-color: var(--gold); }
 
-.auth-bottom { margin-top: 2rem; text-align: center; }
-.prototype-note { position: absolute; bottom: 2rem; left: 0; right: 0; text-align: center; font-size: 0.75rem; color: rgba(255,255,255,0.3); }
+/* =========================================================
+   FORM
+   ========================================================= */
 
-/* Animations */
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
-@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+.auth-card form {
+    width:
+        100%;
+}
 
-/* Mobile */
+
+/* =========================================================
+   IMPORTANT FIX:
+   LABELS
+   ========================================================= */
+
+/*
+   Supports the existing structure:
+
+   <label>
+       Official ID / Email
+       <input>
+   </label>
+
+   AND
+
+   <label>
+       Password
+       <div class="input-wrap">
+           <input>
+           <button>
+       </div>
+   </label>
+*/
+
+.auth-card form > label {
+    display:
+        block !important;
+
+    width:
+        100% !important;
+
+    margin:
+        0 0 1.5rem 0 !important;
+
+    padding:
+        0 !important;
+
+    color:
+        var(--text-muted);
+
+    font-size:
+        0.95rem;
+
+    font-weight:
+        500;
+
+    line-height:
+        1.4;
+}
+
+
+/* =========================================================
+   DIRECT EMAIL / TEXT / PASSWORD INPUT
+   ========================================================= */
+
+.auth-card form > label > input[type="email"],
+.auth-card form > label > input[type="text"],
+.auth-card form > label > input[type="password"] {
+
+    display:
+        block !important;
+
+    width:
+        100% !important;
+
+    height:
+        50px !important;
+
+    margin:
+        0.5rem 0 0 0 !important;
+
+    padding:
+        0 1rem !important;
+
+    background:
+        var(--bg-dark) !important;
+
+    border:
+        1px solid
+        var(--border-light) !important;
+
+    border-radius:
+        6px !important;
+
+    color:
+        #fff !important;
+
+    font-family:
+        inherit !important;
+
+    font-size:
+        1rem !important;
+
+    line-height:
+        50px;
+
+    outline:
+        none;
+
+    box-sizing:
+        border-box;
+
+    appearance:
+        none;
+
+    -webkit-appearance:
+        none;
+
+    float:
+        none !important;
+
+    position:
+        relative;
+}
+
+
+/* =========================================================
+   PLACEHOLDER
+   ========================================================= */
+
+.auth-card input::placeholder {
+    color:
+        #64748b;
+
+    opacity:
+        1;
+}
+
+
+/* =========================================================
+   INPUT FOCUS
+   ========================================================= */
+
+.auth-card input:focus {
+    outline:
+        none !important;
+
+    border-color:
+        var(--gold) !important;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(212, 175, 55, 0.08);
+}
+
+
+/* =========================================================
+   PASSWORD WRAPPER
+   ========================================================= */
+
+.auth-card .input-wrap {
+
+    display:
+        block !important;
+
+    position:
+        relative !important;
+
+    width:
+        100% !important;
+
+    height:
+        50px !important;
+
+    margin:
+        0.5rem 0 0 0 !important;
+
+    padding:
+        0 !important;
+}
+
+
+/* =========================================================
+   PASSWORD INPUT INSIDE WRAPPER
+   ========================================================= */
+
+.auth-card .input-wrap > input[type="password"],
+.auth-card .input-wrap > input[type="text"] {
+
+    display:
+        block !important;
+
+    position:
+        absolute !important;
+
+    top:
+        0 !important;
+
+    left:
+        0 !important;
+
+    width:
+        100% !important;
+
+    height:
+        50px !important;
+
+    margin:
+        0 !important;
+
+    padding:
+        0 75px 0 1rem !important;
+
+    background:
+        var(--bg-dark) !important;
+
+    border:
+        1px solid
+        var(--border-light) !important;
+
+    border-radius:
+        6px !important;
+
+    color:
+        #fff !important;
+
+    font-family:
+        inherit !important;
+
+    font-size:
+        1rem !important;
+
+    line-height:
+        50px;
+
+    box-sizing:
+        border-box;
+
+    outline:
+        none;
+
+    float:
+        none !important;
+
+    appearance:
+        none;
+
+    -webkit-appearance:
+        none;
+}
+
+
+/* =========================================================
+   PASSWORD INPUT FOCUS
+   ========================================================= */
+
+.auth-card .input-wrap > input:focus {
+    border-color:
+        var(--gold) !important;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(212, 175, 55, 0.08);
+}
+
+
+/* =========================================================
+   SHOW / HIDE BUTTON
+   ========================================================= */
+
+.auth-card .input-wrap button.eye {
+
+    position:
+        absolute !important;
+
+    top:
+        50% !important;
+
+    right:
+        1rem !important;
+
+    transform:
+        translateY(-50%) !important;
+
+    display:
+        flex !important;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    width:
+        auto !important;
+
+    height:
+        auto !important;
+
+    margin:
+        0 !important;
+
+    padding:
+        0 !important;
+
+    background:
+        transparent !important;
+
+    border:
+        none !important;
+
+    color:
+        var(--text-muted) !important;
+
+    cursor:
+        pointer;
+
+    font-size:
+        0.9rem;
+
+    font-weight:
+        600;
+
+    line-height:
+        1;
+
+    z-index:
+        10;
+}
+
+.auth-card .input-wrap button.eye:hover {
+    color:
+        #fff !important;
+}
+
+
+/* =========================================================
+   FORM ROW
+   ========================================================= */
+
+.auth-card .form-row {
+
+    display:
+        flex !important;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    width:
+        100%;
+
+    margin:
+        0 0 1.5rem 0;
+
+    padding:
+        0;
+
+    font-size:
+        0.9rem;
+}
+
+
+/* =========================================================
+   REMEMBER ME
+   ========================================================= */
+
+/*
+   Override the normal label rules.
+   This makes checkbox + text stay on the same line.
+*/
+
+.auth-card .form-row label.check {
+
+    display:
+        flex !important;
+
+    flex-direction:
+        row !important;
+
+    align-items:
+        center !important;
+
+    justify-content:
+        flex-start !important;
+
+    width:
+        auto !important;
+
+    margin:
+        0 !important;
+
+    padding:
+        0 !important;
+
+    color:
+        var(--text-main);
+
+    font-size:
+        0.9rem;
+
+    font-weight:
+        500;
+
+    cursor:
+        pointer;
+}
+
+
+/* Checkbox */
+
+.auth-card .form-row label.check input[type="checkbox"] {
+
+    display:
+        inline-block !important;
+
+    width:
+        16px !important;
+
+    min-width:
+        16px !important;
+
+    max-width:
+        16px !important;
+
+    height:
+        16px !important;
+
+    margin:
+        0 !important;
+
+    padding:
+        0 !important;
+
+    border:
+        none !important;
+
+    box-shadow:
+        none !important;
+
+    accent-color:
+        var(--gold);
+
+    appearance:
+        auto;
+
+    -webkit-appearance:
+        auto;
+}
+
+
+/* =========================================================
+   FORGOT PASSWORD
+   ========================================================= */
+
+.auth-card .form-row a {
+    color:
+        var(--gold);
+
+    font-size:
+        0.9rem;
+
+    font-weight:
+        500;
+}
+
+.auth-card .form-row a:hover {
+    color:
+        var(--gold-hover);
+}
+
+
+/* =========================================================
+   FULL LOGIN BUTTON
+   ========================================================= */
+
+.auth-card form .btn.full {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    width:
+        100%;
+
+    height:
+        54px;
+
+    margin:
+        1.5rem 0 0 0;
+
+    padding:
+        0 1.5rem;
+
+    border:
+        none;
+
+    border-radius:
+        8px;
+
+    font-size:
+        1rem;
+
+    font-weight:
+        700;
+}
+
+
+/* =========================================================
+   AUTH BOTTOM
+   ========================================================= */
+
+.auth-bottom {
+    margin-top:
+        2rem;
+
+    text-align:
+        center;
+}
+
+.auth-bottom p {
+    margin-bottom:
+        1rem;
+}
+
+
+/* =========================================================
+   ADMIN AUTH CARD
+   ========================================================= */
+
+body.admin-auth .auth-card {
+
+    border-color:
+        rgba(212, 175, 55, 0.25);
+
+    box-shadow:
+        0 25px 50px -12px
+        rgba(212, 175, 55, 0.08),
+
+        0 20px 45px
+        rgba(0, 0, 0, 0.40);
+}
+
+
+/* =========================================================
+   ADMIN BADGE
+   ========================================================= */
+
+.admin-badge {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    padding:
+        0.35rem 0.75rem;
+
+    margin-bottom:
+        1rem;
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(212, 175, 55, 0.10);
+
+    border:
+        1px solid
+        rgba(212, 175, 55, 0.20);
+
+    color:
+        var(--gold);
+
+    font-size:
+        0.75rem;
+
+    font-weight:
+        700;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        0.08em;
+}
+
+
+/* =========================================================
+   PROTOTYPE NOTE
+   ========================================================= */
+
+.prototype-note {
+
+    position:
+        absolute;
+
+    bottom:
+        2rem;
+
+    left:
+        0;
+
+    right:
+        0;
+
+    text-align:
+        center;
+
+    font-size:
+        0.75rem;
+
+    color:
+        rgba(255, 255, 255, 0.30);
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+    width:
+        8px;
+}
+
+::-webkit-scrollbar-track {
+    background:
+        var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background:
+        #263244;
+
+    border-radius:
+        10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background:
+        #3a475c;
+}
+
+
+/* =========================================================
+   SELECTION
+   ========================================================= */
+
+::selection {
+    background:
+        rgba(212, 175, 55, 0.25);
+
+    color:
+        #fff;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes spin {
+
+    from {
+        transform:
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+}
+
+
+@keyframes ping {
+
+    75%,
+    100% {
+        transform:
+            scale(2);
+
+        opacity:
+            0;
+    }
+}
+
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform:
+            translateY(0);
+    }
+
+    50% {
+        transform:
+            translateY(-20px);
+    }
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .public-nav {
+        padding-left:
+            3%;
+
+        padding-right:
+            3%;
+    }
+
+    .public-nav nav {
+        gap:
+            0.8rem;
+    }
+
+    .public-nav nav a:not(.btn) {
+        font-size:
+            0.9rem;
+    }
+
+    .hero {
+        gap:
+            2rem;
+
+        padding-left:
+            3%;
+
+        padding-right:
+            3%;
+    }
+
+    h1 {
+        font-size:
+            3rem;
+    }
+
+    .process {
+        margin-left:
+            3%;
+
+        margin-right:
+            3%;
+
+        padding:
+            4rem;
+    }
+}
+
+
+/* =========================================================
+   SMALL TABLET
+   ========================================================= */
+
 @media (max-width: 900px) {
-    .auth-layout { grid-template-columns: 1fr; gap: 3rem; margin-top: 6rem; }
-    .hero, .process { grid-template-columns: 1fr; }
-    .hero-panel { display: none; }
+
+    .public-nav {
+
+        position:
+            relative;
+
+        flex-direction:
+            column;
+
+        align-items:
+            flex-start;
+
+        gap:
+            1.5rem;
+
+        padding:
+            1.25rem 5%;
+    }
+
+    .public-nav nav {
+
+        width:
+            100%;
+
+        flex-wrap:
+            wrap;
+
+        gap:
+            0.8rem;
+    }
+
+
+    /* Hero */
+
+    .hero {
+
+        grid-template-columns:
+            1fr;
+
+        gap:
+            3rem;
+
+        padding:
+            7rem 5% 5rem;
+
+        min-height:
+            auto;
+    }
+
+    .hero-copy {
+        max-width:
+            100%;
+    }
+
+    .hero-panel {
+        display:
+            none;
+    }
+
+
+    /* Typography */
+
+    h1 {
+        font-size:
+            2.7rem;
+    }
+
+    h2 {
+        font-size:
+            2rem;
+    }
+
+    p {
+        font-size:
+            1rem;
+    }
+
+
+    /* Hero actions */
+
+    .hero-actions {
+
+        flex-wrap:
+            wrap;
+
+        gap:
+            1rem;
+
+        margin-top:
+            2rem;
+    }
+
+
+    /* Statistics */
+
+    .hero-stat {
+
+        margin-top:
+            3rem;
+
+        gap:
+            1.2rem;
+
+        flex-wrap:
+            wrap;
+    }
+
+    .hero-stat span {
+        min-width:
+            90px;
+    }
+
+
+    /* Process */
+
+    .process {
+
+        grid-template-columns:
+            1fr;
+
+        gap:
+            3rem;
+
+        padding:
+            4rem 2rem;
+
+        margin:
+            3rem 5%;
+    }
+
+
+    /* Authentication */
+
+    .auth-layout {
+
+        grid-template-columns:
+            1fr;
+
+        gap:
+            3rem;
+
+        margin-top:
+            6rem;
+    }
+
+    .auth-aside h1 {
+        font-size:
+            2.5rem;
+    }
+
+    .auth-card {
+        padding:
+            2rem;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .public-nav {
+        padding:
+            1rem 5%;
+    }
+
+    .brand {
+        gap:
+            0.75rem;
+    }
+
+    .brand .crest {
+        width:
+            36px;
+
+        height:
+            36px;
+
+        font-size:
+            1.25rem;
+    }
+
+    .brand-name {
+        font-size:
+            1.1rem;
+    }
+
+    .brand small {
+        font-size:
+            0.65rem;
+    }
+
+
+    .public-nav nav {
+        gap:
+            0.65rem;
+    }
+
+    .public-nav nav a:not(.btn) {
+        font-size:
+            0.8rem;
+    }
+
+    .public-nav .btn {
+        padding:
+            0.65rem 0.9rem;
+
+        font-size:
+            0.8rem;
+    }
+
+
+    /* Hero */
+
+    .hero {
+        padding:
+            5rem 5% 4rem;
+    }
+
+    h1 {
+        font-size:
+            2.25rem;
+
+        line-height:
+            1.08;
+    }
+
+    h2 {
+        font-size:
+            1.8rem;
+    }
+
+
+    /* Hero actions */
+
+    .hero-actions {
+        align-items:
+            stretch;
+
+        flex-direction:
+            column;
+    }
+
+    .hero-actions .btn,
+    .hero-actions .text-link {
+        width:
+            100%;
+    }
+
+
+    /* Stats */
+
+    .hero-stat {
+
+        display:
+            grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap:
+            1rem;
+    }
+
+    .hero-stat span {
+        min-width:
+            0;
+    }
+
+    .hero-stat b {
+        font-size:
+            1.2rem;
+    }
+
+
+    /* Features */
+
+    .feature-grid {
+        grid-template-columns:
+            1fr;
+
+        margin-top:
+            2.5rem;
+    }
+
+    .feature-grid article {
+        padding:
+            1.5rem;
+    }
+
+
+    /* Process */
+
+    .process {
+        padding:
+            3rem 1.5rem;
+    }
+
+
+    /* Security */
+
+    .security {
+        padding:
+            4rem 5%;
+    }
+
+    .security-actions {
+        flex-direction:
+            column;
+
+        width:
+            100%;
+    }
+
+    .security-actions .btn {
+        width:
+            100%;
+    }
+
+
+    /* Footer */
+
+    footer {
+        padding:
+            2rem 5%;
+
+        font-size:
+            0.75rem;
+    }
+
+
+    /* =====================================================
+       AUTH MOBILE
+    ====================================================== */
+
+    body.auth {
+        padding:
+            1.5rem 5%;
+    }
+
+    .auth-brand {
+        position:
+            relative;
+
+        top:
+            auto;
+
+        left:
+            auto;
+    }
+
+    .auth-layout {
+        margin-top:
+            3rem;
+    }
+
+    .auth-card {
+        padding:
+            1.5rem;
+
+        border-radius:
+            12px;
+    }
+
+    .auth-aside h1 {
+        font-size:
+            2.15rem;
+    }
+
+    .auth-aside p {
+        font-size:
+            1rem;
+    }
+
+    .prototype-note {
+        position:
+            relative;
+
+        bottom:
+            auto;
+
+        margin-top:
+            2rem;
+    }
+
+
+    /* Form row */
+
+    .auth-card .form-row {
+        flex-wrap:
+            wrap;
+
+        gap:
+            1rem;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL DEVICES
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .public-nav nav {
+
+        flex-direction:
+            column;
+
+        align-items:
+            stretch;
+    }
+
+    .public-nav nav a:not(.btn) {
+        padding:
+            0.25rem 0;
+    }
+
+    .public-nav nav .btn {
+        width:
+            100%;
+    }
+
+
+    .hero-stat {
+        grid-template-columns:
+            1fr;
+    }
+
+    .hero-stat span {
+
+        border-bottom:
+            1px solid
+            var(--border-light);
+
+        padding-bottom:
+            0.75rem;
+    }
+
+
+    .auth-card .form-row {
+
+        flex-direction:
+            column;
+
+        align-items:
+            flex-start;
+    }
 }

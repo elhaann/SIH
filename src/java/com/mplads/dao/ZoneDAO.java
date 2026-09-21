@@ -78,6 +78,57 @@ public class ZoneDAO {
         return counts;
     }
 
+    /**
+     * Finds the mplads_ml_results row that belongs to one project (matched the same way as the
+     * zone pages: MP + work + amount, with state / constituency / date used to pick the best one).
+     * If several rows match, the one whose risk_level equals {@code level} (may be null) wins.
+     * Returns keys: risk_score, risk_level, anomaly_score, recommendation - or null if none found.
+     */
+    public Map<String, Object> getMlResult(Project p, String level) throws Exception {
+        String sql = "SELECT * FROM mplads_ml_results m "
+                   + "WHERE LOWER(TRIM(m.mp_name)) = ? AND ROUND(m.allocation_amount) = ?";
+        Map<String, Object> best = null;
+        int bestScore = -1;
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, norm(p.getMpName()));
+            ps.setInt(2, p.getAllocationAmount());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                // the explanation column name is cut off in Workbench, so find it by prefix
+                java.sql.ResultSetMetaData md = rs.getMetaData();
+                String explCol = null;
+                for (int i = 1; i <= md.getColumnCount(); i++) {
+                    String n = md.getColumnLabel(i);
+                    if (n.toLowerCase(Locale.ROOT).startsWith("anomaly_explanat")) explCol = n;
+                }
+
+                while (rs.next()) {
+                    if (!normWork(rs.getString("work")).equals(normWork(p.getWork()))) continue;
+
+                    int score = 0;
+                    if (norm(rs.getString("state")).equals(norm(p.getState()))) score++;
+                    if (norm(rs.getString("constituency")).equals(norm(p.getConstituency()))) score++;
+                    if (norm(rs.getString("recommended_date")).equals(norm(p.getDate()))) score++;
+                    String lv = rs.getString("risk_level");
+                    if (level != null && lv != null && lv.trim().equalsIgnoreCase(level.trim())) score += 10;
+
+                    if (score > bestScore) {
+                        bestScore = score;
+                        best = new HashMap<>();
+                        best.put("risk_score", rs.getInt("risk_score"));
+                        best.put("risk_level", lv == null ? "" : lv.trim());
+                        best.put("anomaly_score", rs.getDouble("anomaly_score"));
+                        best.put("recommendation", explCol == null ? "" : rs.getString(explCol));
+                    }
+                }
+            }
+        }
+        return best;
+    }
+
     private List<Project> readZoneRows(String wanted) throws Exception {
         List<Project> list = new ArrayList<>();
         try (Connection con = DBConnection.getConnection();
